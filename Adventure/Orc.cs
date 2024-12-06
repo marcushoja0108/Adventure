@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Security;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Adventure
 {
-    internal class Goblin : NPC
+    internal class Orc :NPC
     {
-        public Goblin(int level)
+        public Orc(int level)
         {
             Name = GetRandomName();
             Level = GetRandomLevel(level);
@@ -18,37 +17,37 @@ namespace Adventure
             MaxStamina = GetMaxStamina();
             Stamina = MaxStamina;
             Strength = GetStrength();
-            ExperienceGain = 20;
+            ExperienceGain = 35;
         }
-
 
         private string GetRandomName()
         {
-            string goblinName = null;
+            string orcName = null;
             Random rand = new Random();
-            switch (rand.Next(0, 4))
+            switch (rand.Next(0,4))
             {
                 case 0:
-                    goblinName = "Angry Goblin";
+                    orcName = "Big orc";
                     break;
                 case 1:
-                    goblinName = "Hungry Goblin";
+                    orcName = "Drunk orc";
                     break;
                 case 2:
-                    goblinName = "Blind Goblin";
+                    orcName = "Injured orc";
                     break;
                 case 3:
-                    goblinName = "Burning Goblin";
+                    orcName = "Fat orc";
                     break;
             }
-            return goblinName;
+
+            return orcName;
         }
 
         private int GetRandomLevel(int level)
         {
             int newLevel = level;
             Random rand = new Random();
-            switch (rand.Next(0,3))
+            switch (rand.Next(0, 3))
             {
                 case 0:
                     newLevel = level + 1;
@@ -64,20 +63,21 @@ namespace Adventure
 
         private int GetMaxHealth()
         {
-            int maxHealth = 6 + (3 * Level);
+            int maxHealth = 8 + (4 * Level);
             return maxHealth;
         }
 
         private int GetMaxStamina()
         {
-            int maxStamina = 3 + Level;
+            int maxStamina = 2 + Level;
             return maxStamina;
         }
 
         private int GetStrength()
         {
-            int strength = 2+ (2 * Level);
+            int strength = 3 + (3 * Level);
             return strength;
         }
+
     }
 }

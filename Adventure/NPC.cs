@@ -13,17 +13,13 @@ namespace Adventure
         public int Health { get; set; }
         public int MaxHealth { get; set; }
         public int Strength { get; set; }
+        public int ExperienceGain { get; set; }
         public int Level { get; set; }
 
         public int Stamina { get; set; }
         public int MaxStamina { get; set; }
 
-        public NPC( int level)
-        {
-            Health = MaxHealth;
-            Stamina = MaxStamina;
-        }
-        private void Attack(IGameCharacter target)
+        public void Attack(IGameCharacter target)
         {
             double minDamage = Math.Round(Strength * 0.75);
             double maxDamage = Strength * 1.25;

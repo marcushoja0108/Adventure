@@ -10,32 +10,57 @@ namespace Adventure
     internal class GameLoop
     {
         List<NPC> _availableNpcs = new List<NPC>();
+        List<Item> _availableItems = new List<Item>();
 
         public void Loop(Player character)
         {
             bool playing = true;
             while (playing)
             {
+                GenerateItems();
                 GenerateEnemies(character);
                 Console.Clear();
                 Random random = new Random();
-                //int randomEvent = random.Next(0,5);
+                int randomEvent = random.Next(0, 4);
+                character.Travelling();
 
-                switch (0)
+                switch (randomEvent)
                 {
                     case 0:
                         EnemyEncounter(character);
                         break;
-                    default:
+                    case 1:
+                        ItemEncounter(character);
+                        break;
+                    case 2:
+                        CalmEncounter(character);
+                        break;
+                    case 3:
+                        ShopEncounter(character);
                         break;
                 }
             }
         }
+
+        public void GenerateItems()
+        {
+            _availableItems.Add(new ItemHealing("1", "Lesser healing potion", 5, 30));
+            _availableItems.Add(new ItemHealing("2", "Medium healing potion", 10, 60));
+            _availableItems.Add(new ItemHealing("3", "Greater healing potion", 15, 90));
+            _availableItems.Add(new ItemMoney("4", "Small purse", 50));
+            _availableItems.Add(new ItemMoney("5", "Medium money bag", 125));
+            _availableItems.Add(new ItemMoney("6", "Heavy chest", 400));
+            _availableItems.Add(new ItemStats("7", "Big plate of bacon", "Health", 2, 75));
+            _availableItems.Add(new ItemStats("8", "Tight V-neck T-shirt", "Strength", 1, 60));
+            _availableItems.Add(new ItemStats("9", "Cool sneakers", "Cunning", 1, 100));
+
+        }
         public void GenerateEnemies(Player character)
         {
+            _availableNpcs.Clear();
             _availableNpcs.Add(new Goblin(character.Level));
-            //_availableNpcs.Add(new NPC("Big orc", character.Level));
-            //_availableNpcs.Add(new NPC("Smelly troll", character.Level));
+            _availableNpcs.Add(new Orc(character.Level));
+            _availableNpcs.Add(new Troll(character.Level));
         }
 
         private void EnemyEncounter(Player character)
@@ -44,11 +69,11 @@ namespace Adventure
             NPC encounter = _availableNpcs[rand.Next(0, _availableNpcs.Count)];
 
             Console.WriteLine();
-            Console.WriteLine($"{character.Name} met {encounter.Name}.");
-            character.ShowEncounterOptions();
+            Console.WriteLine($"{character.Name} met level {encounter.Level} {encounter.Name}.");
             bool done = false;
             while (done == false)
             {
+                character.ShowEncounterOptions();
                 Console.WriteLine("What do you want to do?");
                 switch (Console.ReadLine())
                 {
@@ -63,20 +88,27 @@ namespace Adventure
                     case "3":
                         character.Show();
                         break;
+                    case "4":
+                        character.ShowInventory();
+                        break;
+                    default:
+                        Console.WriteLine("Not a valid command");
+                        break;
                 }
             }
         }
 
         public void Battle(Player character, NPC encounter)
         {
-            while (encounter.Health > 0)
+            bool fled = false;
+            while (encounter.Health > 0 && fled == false)
             {
                 Check(character);
-                character.ShowFightOptions();
                 bool done = false;
 
                 while (done == false)
                 {
+                    character.ShowFightOptions();
                     switch (Console.ReadLine())
                     {
                         case "1":
@@ -88,7 +120,14 @@ namespace Adventure
                             done = true;
                             break;
                         case "3":
+                            fled = character.TryFlee(encounter);
+                            done = true;
+                            break;
+                        case "4":
                             character.Show();
+                            break;
+                        case "5":
+                            character.ShowInventory();
                             break;
                         default:
                             Console.WriteLine("Not a valid command.");
@@ -96,18 +135,17 @@ namespace Adventure
                     }
                 }
                 Thread.Sleep(500);
-                if (encounter.Health > 0) { encounter.Action(character); }
+                if (encounter.Health > 0 && fled == false) { encounter.Action(character); }
                 else
                 {
                     character._defeatedList.Add(encounter);
+                    character.ExperienceGain(encounter.ExperienceGain);
                     Console.WriteLine($"{character.Name} has defeated {encounter.Name}.");
                     Console.WriteLine();
-                    character.LevelUp();
-                    Console.WriteLine("Press a button to continue");
-                    Console.ReadLine();
                 };
             }
-
+            Console.WriteLine("Press a button to continue");
+            Console.ReadLine();
         }
 
         public void SneakAway(Player character, NPC encounter)
@@ -120,15 +158,16 @@ namespace Adventure
             {
                 Console.WriteLine($"{encounter.Name} has spotted {character.Name}!");
                 Console.WriteLine("It charges and gets off a free attack!");
-                encounter.Action(character);
+                encounter.Attack(character);
                 Battle(character, encounter);
                 return;
             }
             else
             {
                 character.Cunning++;
+                character.ExperienceGain(15);
                 Console.WriteLine($"{character.Name} managed to sneak away from the {encounter.Name}");
-                Console.WriteLine($"{character.Name} has gained 1 point in cunning and is now {character.Cunning}.");
+                Console.WriteLine($"{character.Name} has gained 1 point in cunning and some XP.");
                 Console.WriteLine("Press a button to continue");
                 Console.ReadLine();
             }
@@ -148,5 +187,80 @@ namespace Adventure
             }
         }
 
+        public void ItemEncounter(Player character)
+        {
+            Console.WriteLine("You found something lying on the road.");
+            Random randItem = new Random();
+            Item itemEncounter = _availableItems[randItem.Next(0, _availableItems.Count)];
+            Console.WriteLine($"It is a {itemEncounter.Name}. Pick it up?");
+            Console.WriteLine("1. Yes");
+            Console.WriteLine("2. No");
+
+            bool done = false;
+            while (done == false)
+            {
+                switch (Console.ReadLine())
+                {
+                    case "1":
+                        Console.WriteLine($"You picked up {itemEncounter.Name}");
+                        character.Inventory.Add(itemEncounter);
+                        Console.WriteLine("Press any button to continue");
+                        Console.ReadLine();
+                        done = true;
+                        break;
+                    case "2":
+                        Console.WriteLine("You continue walking.");
+                        Console.WriteLine("Press any button to continue");
+                        Console.ReadLine();
+                        done = true;
+                        break;
+                    default:
+                        Console.WriteLine("Not a valid command");
+                        break;
+                }
+
+            }
+        }
+
+        public void CalmEncounter(Player character)
+        {
+            Console.WriteLine();
+            Console.WriteLine("It is a calm day. Continuing on your journey without  much care");
+            character.ExperienceGain(5);
+        }
+
+        public void ShopEncounter(Player character)
+        {
+            Console.WriteLine("You stumble upon a trader along your way and decide to take a look.");
+            Shop shop = new Shop();
+            Console.WriteLine($"Welcome to {shop.Name}!");
+            bool done = false;
+            while (done == false)
+            {
+                shop.Show();
+                character.Show();
+
+                switch (Console.ReadLine())
+                {
+                    case "1":
+                        character.Buy(shop);
+                        break;
+                    case "2":
+                        character.Sell(shop);
+                        break;
+                    case "3":
+                        Console.WriteLine("Are you sure you want to leave?");
+                        Console.WriteLine("1. Yes");
+                        Console.WriteLine("2. No");
+                        switch (Console.ReadLine())
+                        {
+                            case "1":
+                                done = true;
+                                break;
+                        }
+                        break;
+                }
+            }
+        }
     }
 }
