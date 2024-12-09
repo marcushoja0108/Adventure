@@ -19,6 +19,7 @@ namespace Adventure
             Stamina = MaxStamina;
             Strength = GetStrength();
             ExperienceGain = 20;
+            Color = ConsoleColor.Red;
         }
 
 

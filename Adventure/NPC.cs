@@ -19,6 +19,8 @@ namespace Adventure
         public int Stamina { get; set; }
         public int MaxStamina { get; set; }
 
+        public ConsoleColor Color { get; set; }
+
         public void Attack(IGameCharacter target)
         {
             double minDamage = Math.Round(Strength * 0.75);
@@ -36,6 +38,7 @@ namespace Adventure
 
         public void Action(IGameCharacter target)
         {
+            Console.ForegroundColor = Color;
             if (Stamina > 0)
             {
                 Attack(target);
@@ -44,6 +47,7 @@ namespace Adventure
             {
                 Rest();
             }
+            Console.ResetColor();
         }
 
         private void Rest()

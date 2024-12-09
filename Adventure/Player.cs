@@ -11,7 +11,6 @@ namespace Adventure
     {
         public string Name { get; set; }
         public int Health { get; set; }
-
         public int MaxHealth { get; set; }
         public int Strength { get; set; }
         public int Cunning { get; set; }
@@ -29,6 +28,8 @@ namespace Adventure
 
         public int Gold { get; set; }
 
+        public ConsoleColor Color { get; }
+
         public Player(string name, int maxHealth, int strength, int cunning, int level, int maxLevel, int maxStamina)
         {
             Name = name;
@@ -44,6 +45,7 @@ namespace Adventure
             _defeatedList = new List<NPC>();
             Inventory = new List<Item>();
             Gold = 0;
+            Color = ConsoleColor.Green;
 
         }
         public void Attack(IGameCharacter target)
@@ -116,7 +118,6 @@ namespace Adventure
             {
                 Console.WriteLine($"The {encounter.Name} catches up with you!");
             }
-
             return success;
         }
 
@@ -177,6 +178,7 @@ namespace Adventure
 
         public void Show()
         {
+            Console.ForegroundColor = Color;
             Console.WriteLine();
             Console.WriteLine(Name);
             Console.WriteLine($"Gold: {Gold}");
@@ -187,6 +189,7 @@ namespace Adventure
             Console.WriteLine($"Cunning: {Cunning}");
             Console.WriteLine($"Stamina: {Stamina}/{MaxStamina}");
             Console.WriteLine();
+            Console.ResetColor();
         }
 
         public void ShowDefeatedEnemies()
@@ -195,8 +198,10 @@ namespace Adventure
             Console.WriteLine("--------------------------------");
             foreach (var enemy in _defeatedList)
             {
+                Console.ForegroundColor = enemy.Color;
                 Console.WriteLine($"{enemy.Name}    Level: {enemy.Level}");
             }
+            Console.ResetColor();
             Console.WriteLine("--------------------------------");
         }
 
@@ -205,6 +210,7 @@ namespace Adventure
             bool done = false;
             while (done == false)
             {
+                Console.ForegroundColor = Color;
                 Console.WriteLine("Inventory");
                 Console.WriteLine("---------------------------------");
 
@@ -213,6 +219,7 @@ namespace Adventure
                     item.Show();
                 }
                 Console.WriteLine("---------------------------------");
+                Console.ResetColor();
 
                 Console.WriteLine("1. Use an item");
                 Console.WriteLine("2. Back");
@@ -231,14 +238,21 @@ namespace Adventure
             }
         }
 
+        //first or default returnerer null hvis den ikke finner match
         public void UseItem()
         {
             Console.WriteLine("Type the ID of the item you want to use.");
             string inputId = Console.ReadLine();
+            Item selectedItem = Inventory.FirstOrDefault(item => item.Id == inputId);
 
-            Item selectedItem = Inventory.First(item => item.Id == inputId);
-            selectedItem.UseItem(this);
-            Inventory.Remove(selectedItem);
+            if (selectedItem == null)
+            {
+                Console.WriteLine("No item with that ID found");
+            }
+            else
+            {
+                selectedItem.UseItem(this);
+            }
         }
 
         public void Sell(Shop shop)
@@ -253,7 +267,7 @@ namespace Adventure
             {
                 item.Show();
             }
-
+            Console.WriteLine();
             Console.WriteLine("Type the ID of the Item you want to sell");
             string userInput = Console.ReadLine().ToLower();
             Item itemSelect = Inventory.First(item => item.Id == userInput);
@@ -310,15 +324,16 @@ namespace Adventure
             {
                 Console.WriteLine("No item with that ID");
             }
+            Thread.Sleep(700);
         }
 
         public void Travelling()
         {
             Rest();
-            ShowTravellingOptions();
             bool done = false;
             while (done == false)
             {
+                ShowTravellingOptions();
                 switch (Console.ReadLine())
                 {
                     case "1":
@@ -333,6 +348,7 @@ namespace Adventure
                         break;
                 }
             }
+            Console.Clear();
         }
 
         public void ShowTravellingOptions()

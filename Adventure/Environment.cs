@@ -46,23 +46,30 @@ namespace Adventure
             Console.WriteLine("1. Warrior");
             Console.WriteLine("2. Mage");
             Console.WriteLine("3. Hunter");
-            switch (Console.ReadLine())
+            bool done = false;
+            while (done == false)
             {
-                case "1":
-                    Console.WriteLine("You have chosen warrior!");
-                    CreateNewCharacter(1);
-                    break;
-                case "2":
-                    Console.WriteLine("You have chosen mage!");
-                    CreateNewCharacter(2);
-                    break;
-                case "3":
-                    Console.WriteLine("You have chosen hunter!");
-                    CreateNewCharacter(3);
-                    break;
-                default:
-                    Console.WriteLine("That is not a valid class");
-                    break;
+                switch (Console.ReadLine())
+                {
+                    case "1":
+                        done = true;
+                        Console.WriteLine("You have chosen warrior!");
+                        CreateNewCharacter(1);
+                        break;
+                    case "2":
+                        done = true;
+                        Console.WriteLine("You have chosen mage!");
+                        CreateNewCharacter(2);
+                        break;
+                    case "3":
+                        done = true;
+                        Console.WriteLine("You have chosen hunter!");
+                        CreateNewCharacter(3);
+                        break;
+                    default:
+                        Console.WriteLine("That is not a valid class");
+                        break;
+                }
             }
         }
 

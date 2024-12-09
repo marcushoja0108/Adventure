@@ -105,6 +105,7 @@ namespace Adventure
             {
                 Check(character);
                 bool done = false;
+                Console.ForegroundColor = character.Color;
 
                 while (done == false)
                 {
@@ -135,15 +136,18 @@ namespace Adventure
                     }
                 }
                 Thread.Sleep(500);
+                Console.ForegroundColor = encounter.Color;
                 if (encounter.Health > 0 && fled == false) { encounter.Action(character); }
                 else
                 {
+                    Console.ForegroundColor = character.Color;
                     character._defeatedList.Add(encounter);
                     character.ExperienceGain(encounter.ExperienceGain);
                     Console.WriteLine($"{character.Name} has defeated {encounter.Name}.");
                     Console.WriteLine();
                 };
             }
+            Console.ResetColor();
             Console.WriteLine("Press a button to continue");
             Console.ReadLine();
         }
@@ -227,6 +231,8 @@ namespace Adventure
             Console.WriteLine();
             Console.WriteLine("It is a calm day. Continuing on your journey without  much care");
             character.ExperienceGain(5);
+            Console.WriteLine("Press any button to continue");
+            Console.ReadLine();
         }
 
         public void ShopEncounter(Player character)

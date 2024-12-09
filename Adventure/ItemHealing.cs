@@ -27,6 +27,7 @@ namespace Adventure
             if (userinput == "1")
             {
                 Heal(character);
+                character.Inventory.Remove(this);
                 character.ShowInventory();
             }
             else if (userinput == "2")
@@ -57,7 +58,7 @@ namespace Adventure
         public override void Show()
         {
             Console.WriteLine();
-            Console.WriteLine($"Id: {Id}  Name: {Name}  Heals for {HealAmount} hp");
+            Console.WriteLine($"Id: {Id}    Name: {Name}    Price: {Price} gold    Heals for {HealAmount} hp");
         }
     }
 }

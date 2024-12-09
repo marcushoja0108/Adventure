@@ -42,6 +42,7 @@ namespace Adventure
                     character.Cunning += StatIncrease;
                 }
                 Console.WriteLine($"{StatToIncrease} has increased by {StatIncrease}!");
+                character.Inventory.Remove(this);
             }
             else if (userInput == "2")
             {
@@ -56,7 +57,7 @@ namespace Adventure
         public override void Show()
         {
             Console.WriteLine();
-            Console.WriteLine($"Id: {Id}  Name: {Name}  Increases {StatToIncrease} by {StatIncrease}");
+            Console.WriteLine($"Id: {Id}    Name: {Name}    Price: {Price} gold    Increases {StatToIncrease} by {StatIncrease}");
         }
     }
 }

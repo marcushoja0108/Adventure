@@ -24,12 +24,13 @@ namespace Adventure
             Console.WriteLine($"You scurry on like a loot goblin.");
             character.Gold += Amount;
             Console.WriteLine($"Gold: {character.Gold}");
+            character.Inventory.Remove(this);
         }
 
         public override void Show()
         {
             Console.WriteLine();
-            Console.WriteLine($"Id: {Id}  {Name}");
+            Console.WriteLine($"Id: {Id}    {Name}    Contains gold pieces");
         }
     }
 }
