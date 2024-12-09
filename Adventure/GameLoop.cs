@@ -53,6 +53,9 @@ namespace Adventure
             _availableItems.Add(new ItemStats("7", "Big plate of bacon", "Health", 2, 75));
             _availableItems.Add(new ItemStats("8", "Tight V-neck T-shirt", "Strength", 1, 60));
             _availableItems.Add(new ItemStats("9", "Cool sneakers", "Cunning", 1, 100));
+            _availableItems.Add(new ItemXP("10", "Small book", 20, 80));
+            _availableItems.Add(new ItemXP("11", "Medium sized book", 40, 150));
+            _availableItems.Add(new ItemXP("12", "Huge book", 80, 350));
 
         }
         public void GenerateEnemies(Player character)
@@ -138,13 +141,19 @@ namespace Adventure
                 Thread.Sleep(500);
                 Console.ForegroundColor = encounter.Color;
                 if (encounter.Health > 0 && fled == false) { encounter.Action(character); }
-                else
+                else if (encounter.Health >= 0)
                 {
                     Console.ForegroundColor = character.Color;
                     character._defeatedList.Add(encounter);
-                    character.ExperienceGain(encounter.ExperienceGain);
                     Console.WriteLine($"{character.Name} has defeated {encounter.Name}.");
+                    character.ExperienceGain(encounter.ExperienceGain);
+                    encounter.LootNPC(character);
+                }
+                else
+                {
                     Console.WriteLine();
+                    Console.ForegroundColor = character.Color;
+                    character.ExperienceGain(encounter.ExperienceGain/2);
                 };
             }
             Console.ResetColor();

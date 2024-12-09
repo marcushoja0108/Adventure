@@ -19,6 +19,16 @@ namespace Adventure
             Strength = GetStrength();
             ExperienceGain = 35;
             Color = ConsoleColor.Red;
+            LootGold = GetLootGold();
+            LootItem = GetLootItem();
+            PossibleLootItems = new List<Item>
+            {
+                new ItemHealing("2", "Medium healing potion", 10, 60),
+                new ItemXP("11", "Medium sized book", 40, 150),
+                new ItemHealing("1", "Lesser healing potion", 5, 30),
+                new ItemStats("7", "Big plate of bacon", "Health", 2, 75),
+                new ItemXP("10", "Small book", 20, 80),
+            };
         }
 
         private string GetRandomName()
@@ -78,6 +88,20 @@ namespace Adventure
         {
             int strength = 3 + (3 * Level);
             return strength;
+        }
+
+        private int GetLootGold()
+        {
+            Random gold = new Random();
+
+            return gold.Next(10, 50);
+        }
+
+        private Item GetLootItem()
+        {
+            Random rand = new Random();
+            Item lootItem = PossibleLootItems[rand.Next(0, PossibleLootItems.Count)];
+            return lootItem;
         }
 
     }

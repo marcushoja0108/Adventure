@@ -314,6 +314,8 @@ namespace Adventure
                     shop.Gold += itemSelect.Price;
                     Gold -= itemSelect.Price;
                     Console.WriteLine($"You have bought {itemSelect.Name} for {itemSelect.Price}!");
+                    double newPrice = Math.Round(itemSelect.Price * 0.9);
+                    itemSelect.Price = Convert.ToInt32(newPrice);
                 }
                 else
                 {
@@ -356,6 +358,25 @@ namespace Adventure
             Console.WriteLine("1. Continue on your journey");
             Console.WriteLine("2. Show inventory");
             Console.WriteLine("3. Stats");
+        }
+        public void Loot(Item LootItem)
+        {
+            Console.WriteLine($"Do you wish to pick up {LootItem.Name}?");
+            Console.WriteLine("1. Yes");
+            Console.WriteLine("2. No");
+            switch (Console.ReadLine())
+            {
+                case "1":
+                    Inventory.Add(LootItem);
+                    Console.WriteLine($"{LootItem.Name} added to your inventory!");
+                    break;
+                case "2":
+                    Console.WriteLine("You leave the item on the ground.");
+                    break;
+                default:
+                    Console.WriteLine("Not a command");
+                    break;
+            }
         }
     }
 }

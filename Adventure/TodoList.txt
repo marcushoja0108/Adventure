@@ -1,0 +1,6 @@
+﻿*	Endre prisene fra sell til buy 
+	slik at når man selger items får man mindre gold enn man kan kjøpe de for
+**	Bossfight når man når max level
+*	Stats fra menu skjermen. Ulike karakterer med deres stats skjerm
+*	SaveGame ved bruk av json. lagrer state og karakterer.
+*	Test loot funksjon
