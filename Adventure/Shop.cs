@@ -86,16 +86,16 @@ namespace Adventure
             Console.ForegroundColor = Color;
             Console.WriteLine();
             Console.WriteLine($"{Name}          Gold: {Gold}");
-            Console.WriteLine("-----------------------------------------------------");
+            Console.WriteLine("-------------------------------------------------------------------------------");
             foreach (var item in ShopInventory)
             {
                 item.Show();
             }
-            Console.WriteLine("-----------------------------------------------------");
+            Console.WriteLine("-------------------------------------------------------------------------------");
+            Console.ResetColor();
             Console.WriteLine("1. Buy");
             Console.WriteLine("2. Sell");
             Console.WriteLine("3. Leave");
-            Console.ResetColor();
         }
     }
 }

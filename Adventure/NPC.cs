@@ -40,6 +40,26 @@ namespace Adventure
             Console.WriteLine($"{target.Name} has {target.Health} health left.");
         }
 
+        public string HpBar()
+        {
+            var hpBar = "";
+            int blocks = Health * 10 / MaxHealth;
+            for (var i = 0; i < blocks; i++)
+            {
+                if (i < blocks)
+                {
+                    hpBar += "\u258c";
+                }
+                else
+                {
+                    hpBar += "";
+                }
+            }
+
+            return hpBar;
+        }
+
+
         public void Action(IGameCharacter target)
         {
             Console.ForegroundColor = Color;
@@ -65,11 +85,12 @@ namespace Adventure
         public void LootNPC(Player character)
         {
             Random loot = new Random();
-
+            Console.ForegroundColor = ConsoleColor.Yellow;
             switch (loot.Next(0, 3))
             {
                 case 0:
-                    Console.WriteLine($"You found {LootItem} on {Name}");
+                    Console.WriteLine($"You found {LootItem.Name} on {Name}");
+                    Console.ResetColor();
                     character.Loot(LootItem);
                     break;
                 case 1:
@@ -79,6 +100,7 @@ namespace Adventure
                     Console.WriteLine($"You found nothing of value on {Name}");
                     break;
             }
+            Console.ResetColor();
         }
     }
 }

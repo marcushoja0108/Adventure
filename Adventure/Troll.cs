@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Win32.SafeHandles;
 
 namespace Adventure
 {
@@ -19,8 +20,6 @@ namespace Adventure
                 Strength = GetStrength();
                 ExperienceGain = 50;
                 Color = ConsoleColor.Red;
-                LootGold = GetLootGold();
-                LootItem = GetLootItem();
                 PossibleLootItems = new List<Item>
                 {
                     new ItemHealing("2", "Medium healing potion", 10, 60),
@@ -31,30 +30,16 @@ namespace Adventure
                     new ItemHealing("3", "Greater healing potion", 15, 90),
                     new ItemMoney("6", "Heavy chest", 400),
                     new ItemMoney("5", "Medium money bag", 125),
-
                 };
-
+                LootGold = GetLootGold();
+                LootItem = GetLootItem();
         }
 
         private string GetRandomName()
-            {
-                string trollName = null;
+        {
+            string[] trollNames = {"Smelly troll", "Tall troll", "One eyed troll", "Troll with a club" };
                 Random rand = new Random();
-                switch (rand.Next(0, 4))
-                {
-                    case 0:
-                        trollName = "Smelly troll";
-                        break;
-                    case 1:
-                        trollName = "Tall troll";
-                        break;
-                    case 2:
-                        trollName = "One eyed troll";
-                        break;
-                    case 3:
-                        trollName = "Troll with a club";
-                        break;
-                }
+                string trollName = trollNames[rand.Next(0, trollNames.Length)];
                 return trollName;
             }
 
@@ -70,9 +55,7 @@ namespace Adventure
                     case 1:
                         newLevel = level - 1;
                         break;
-                    default:
-                        break;
-                }
+               }
                 return newLevel;
             }
 

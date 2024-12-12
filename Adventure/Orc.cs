@@ -19,8 +19,6 @@ namespace Adventure
             Strength = GetStrength();
             ExperienceGain = 35;
             Color = ConsoleColor.Red;
-            LootGold = GetLootGold();
-            LootItem = GetLootItem();
             PossibleLootItems = new List<Item>
             {
                 new ItemHealing("2", "Medium healing potion", 10, 60),
@@ -29,28 +27,16 @@ namespace Adventure
                 new ItemStats("7", "Big plate of bacon", "Health", 2, 75),
                 new ItemXP("10", "Small book", 20, 80),
             };
+            LootGold = GetLootGold();
+            LootItem = GetLootItem();
         }
+
 
         private string GetRandomName()
         {
-            string orcName = null;
+            string[] orcNames = { "Big orc", "Drunk orc", "Injured orc", "Fat orc" };
             Random rand = new Random();
-            switch (rand.Next(0,4))
-            {
-                case 0:
-                    orcName = "Big orc";
-                    break;
-                case 1:
-                    orcName = "Drunk orc";
-                    break;
-                case 2:
-                    orcName = "Injured orc";
-                    break;
-                case 3:
-                    orcName = "Fat orc";
-                    break;
-            }
-
+            string orcName = orcNames[rand.Next(0, orcNames.Length)];
             return orcName;
         }
 
@@ -65,8 +51,6 @@ namespace Adventure
                     break;
                 case 1:
                     newLevel = level - 1;
-                    break;
-                default:
                     break;
             }
             return newLevel;

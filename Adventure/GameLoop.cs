@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Adventure;
 
@@ -11,7 +13,7 @@ namespace Adventure
     {
         List<NPC> _availableNpcs = new List<NPC>();
         List<Item> _availableItems = new List<Item>();
-
+        Random _random = new Random();
         public void Loop(Player character)
         {
             bool playing = true;
@@ -20,8 +22,7 @@ namespace Adventure
                 GenerateItems();
                 GenerateEnemies(character);
                 Console.Clear();
-                Random random = new Random();
-                int randomEvent = random.Next(0, 4);
+                int randomEvent = _random.Next(0, 4);
                 character.Travelling();
 
                 switch (randomEvent)
@@ -101,6 +102,7 @@ namespace Adventure
             }
         }
 
+
         public void Battle(Player character, NPC encounter)
         {
             bool fled = false;
@@ -112,6 +114,7 @@ namespace Adventure
 
                 while (done == false)
                 {
+                    DisplayHealthBars(character, encounter);
                     character.ShowFightOptions();
                     switch (Console.ReadLine())
                     {
@@ -141,15 +144,15 @@ namespace Adventure
                 Thread.Sleep(500);
                 Console.ForegroundColor = encounter.Color;
                 if (encounter.Health > 0 && fled == false) { encounter.Action(character); }
-                else if (encounter.Health >= 0)
+                else if (encounter.Health <= 0)
                 {
                     Console.ForegroundColor = character.Color;
-                    character._defeatedList.Add(encounter);
+                    character.DefeatedList.Add(encounter);
                     Console.WriteLine($"{character.Name} has defeated {encounter.Name}.");
                     character.ExperienceGain(encounter.ExperienceGain);
                     encounter.LootNPC(character);
                 }
-                else
+                else 
                 {
                     Console.WriteLine();
                     Console.ForegroundColor = character.Color;
@@ -157,8 +160,20 @@ namespace Adventure
                 };
             }
             Console.ResetColor();
-            Console.WriteLine("Press a button to continue");
+            Console.WriteLine("Press enter to continue");
             Console.ReadLine();
+        }
+        public void DisplayHealthBars(Player character, NPC encounter)
+        {
+            Console.WriteLine("---------------------------------------------------------");
+            Console.WriteLine(character.Name);
+            Console.WriteLine($"Health: {character.HpBar()}");
+            Console.WriteLine();
+            Console.ForegroundColor = encounter.Color;
+            Console.WriteLine(encounter.Name);
+            Console.WriteLine($"Health: {encounter.HpBar()}");
+            Console.ForegroundColor = character.Color;
+            Console.WriteLine("----------------------------------------------------------");
         }
 
         public void SneakAway(Player character, NPC encounter)
@@ -181,7 +196,7 @@ namespace Adventure
                 character.ExperienceGain(15);
                 Console.WriteLine($"{character.Name} managed to sneak away from the {encounter.Name}");
                 Console.WriteLine($"{character.Name} has gained 1 point in cunning and some XP.");
-                Console.WriteLine("Press a button to continue");
+                Console.WriteLine("Press enter to continue");
                 Console.ReadLine();
             }
         }
@@ -191,8 +206,11 @@ namespace Adventure
             if (character.Health <= 0)
             {
                 Console.WriteLine();
+                Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("-------Game over-------");
-                Console.WriteLine("Press a button to go back to the main menu");
+                Console.WriteLine("Press enter to go back to the main menu");
+                SaveGame(character);
+                Console.ResetColor();
                 Console.ReadLine();
                 Console.Clear();
                 Environment world = new Environment();
@@ -217,13 +235,13 @@ namespace Adventure
                     case "1":
                         Console.WriteLine($"You picked up {itemEncounter.Name}");
                         character.Inventory.Add(itemEncounter);
-                        Console.WriteLine("Press any button to continue");
+                        Console.WriteLine("Press enter to continue");
                         Console.ReadLine();
                         done = true;
                         break;
                     case "2":
                         Console.WriteLine("You continue walking.");
-                        Console.WriteLine("Press any button to continue");
+                        Console.WriteLine("Press enter to continue");
                         Console.ReadLine();
                         done = true;
                         break;
@@ -240,7 +258,7 @@ namespace Adventure
             Console.WriteLine();
             Console.WriteLine("It is a calm day. Continuing on your journey without  much care");
             character.ExperienceGain(5);
-            Console.WriteLine("Press any button to continue");
+            Console.WriteLine("Press enter to continue");
             Console.ReadLine();
         }
 
@@ -276,6 +294,21 @@ namespace Adventure
                         break;
                 }
             }
+        }
+
+        public void SaveGame(Player character)
+        {
+            List<Player> characters = new List<Player>();
+            if (File.Exists("deadCharacters.json"))
+            {
+                var json = File.ReadAllText("deadCharacters.json");
+                characters = JsonSerializer.Deserialize<List<Player>>(json) ?? new List<Player>();
+            }
+
+            characters.Add(character);
+
+            var updatedJson = JsonSerializer.Serialize(characters);
+            File.WriteAllText("deadCharacters.json",updatedJson);
         }
     }
 }

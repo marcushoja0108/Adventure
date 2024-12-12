@@ -27,7 +27,7 @@ namespace Adventure
             string userInput = Console.ReadLine();
             if (userInput == "1")
             {
-                Console.WriteLine($"You have gained {ExperienceAmount} XP!");
+                Console.WriteLine($"You read the book page to page.");
                 character.ExperienceGain(ExperienceAmount);
                 character.Inventory.Remove(this);
             }

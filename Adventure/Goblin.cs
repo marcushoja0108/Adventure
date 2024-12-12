@@ -21,7 +21,6 @@ namespace Adventure
             ExperienceGain = 20;
             Color = ConsoleColor.Red;
             LootGold = GetLootGold();
-            LootItem = GetLootItem();
             PossibleLootItems = new List<Item>
             {
                 new ItemMoney("4", "Small purse", 50),
@@ -30,28 +29,15 @@ namespace Adventure
                 new ItemXP("10", "Small book", 20, 80),
                 new ItemMoney("6", "Heavy chest", 400),
             };
+            LootItem = GetLootItem();
         }
 
 
         private string GetRandomName()
         {
-            string goblinName = null;
+            string[] goblinNames = {"Angry Goblin", "Hungry Goblin", "Blind Goblin", "Burning Goblin" };
             Random rand = new Random();
-            switch (rand.Next(0, 4))
-            {
-                case 0:
-                    goblinName = "Angry Goblin";
-                    break;
-                case 1:
-                    goblinName = "Hungry Goblin";
-                    break;
-                case 2:
-                    goblinName = "Blind Goblin";
-                    break;
-                case 3:
-                    goblinName = "Burning Goblin";
-                    break;
-            }
+            string goblinName = goblinNames[rand.Next(0, goblinNames.Length)];
             return goblinName;
         }
 
@@ -66,8 +52,6 @@ namespace Adventure
                     break;
                 case 1:
                     newLevel = level - 1;
-                    break;
-                default:
                     break;
             }
             return newLevel;
@@ -101,7 +85,7 @@ namespace Adventure
         private Item GetLootItem()
         {
             Random rand = new Random();
-            Item lootItem = PossibleLootItems[rand.Next(0, PossibleLootItems.Count)];
+            var lootItem = PossibleLootItems[rand.Next(0, PossibleLootItems.Count)];
             return lootItem;
         }
 

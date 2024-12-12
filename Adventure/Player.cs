@@ -10,6 +10,7 @@ namespace Adventure
     internal class Player : IGameCharacter
     {
         public string Name { get; set; }
+        public string ClassName { get; }
         public int Health { get; set; }
         public int MaxHealth { get; set; }
         public int Strength { get; set; }
@@ -22,7 +23,7 @@ namespace Adventure
         public int Stamina { get; set; }
         public int MaxStamina { get; set; }
 
-        public List<NPC> _defeatedList;
+        public List<NPC> DefeatedList;
         
         public List<Item> Inventory;
 
@@ -30,9 +31,10 @@ namespace Adventure
 
         public ConsoleColor Color { get; }
 
-        public Player(string name, int maxHealth, int strength, int cunning, int level, int maxLevel, int maxStamina)
+        public Player(string name, string className, int maxHealth, int strength, int cunning, int level, int maxLevel, int maxStamina)
         {
             Name = name;
+            ClassName = className;
             MaxHealth = maxHealth;
             Health = MaxHealth;
             Strength = strength;
@@ -42,12 +44,40 @@ namespace Adventure
             MaxLevel = maxLevel;
             MaxStamina = maxStamina;
             Stamina = MaxStamina;
-            _defeatedList = new List<NPC>();
+            DefeatedList = new List<NPC>();
             Inventory = new List<Item>();
-            Gold = 0;
+            Gold = 500;
             Color = ConsoleColor.Green;
 
         }
+
+        public string HpBar()
+        {
+            var hpBar = "";
+            int blocks = Health * 10 / MaxHealth;
+            for (var i = 0; i < blocks; i++)
+            {
+                if (i < blocks)
+                {
+                    hpBar += "\u258c";
+                }
+                else
+                {
+                    hpBar += "";
+                }
+            }
+
+            if (Health < 0.2 * MaxHealth)
+            {
+                Console.ForegroundColor = ConsoleColor.DarkRed;
+            }
+            else if (Health < 0.5 * MaxHealth)
+            {
+                Console.ForegroundColor = ConsoleColor.DarkYellow;
+            }
+            return hpBar;
+        }
+
         public void Attack(IGameCharacter target)
         {
             if (Stamina > 0)
@@ -94,8 +124,8 @@ namespace Adventure
             }
             else
             {
-                Console.WriteLine($"{Name} is both rested and healed and spent som time training");
-                ExperienceGain(15);
+                Console.WriteLine($"{Name} is both rested and healed and spent some time training");
+                ExperienceGain(10);
             }
         }
 
@@ -123,6 +153,7 @@ namespace Adventure
 
         public void ExperienceGain(int gain)
         {
+            Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine($"You gained {gain} XP.");
             Experience += gain;
             if (Experience >= 100)
@@ -130,6 +161,7 @@ namespace Adventure
                 Experience = Experience - 100;
                 LevelUp();
             }
+            Console.ResetColor();
         }
 
         public void LevelUp()
@@ -194,15 +226,17 @@ namespace Adventure
 
         public void ShowDefeatedEnemies()
         {
+            Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine("Defeated enemies");
             Console.WriteLine("--------------------------------");
-            foreach (var enemy in _defeatedList)
+            foreach (var enemy in DefeatedList)
             {
                 Console.ForegroundColor = enemy.Color;
                 Console.WriteLine($"{enemy.Name}    Level: {enemy.Level}");
             }
             Console.ResetColor();
             Console.WriteLine("--------------------------------");
+            Console.ResetColor();
         }
 
         public void ShowInventory()
@@ -238,7 +272,6 @@ namespace Adventure
             }
         }
 
-        //first or default returnerer null hvis den ikke finner match
         public void UseItem()
         {
             Console.WriteLine("Type the ID of the item you want to use.");
@@ -291,7 +324,7 @@ namespace Adventure
                 shop.ShopInventory.Add(item);
                 Gold += item.Price;
                 shop.Gold -= item.Price;
-                Console.WriteLine($"You have sold {item.Name} for {item.Price}.");
+                Console.WriteLine($"You have sold {item.Name} for {item.Price} gold.");
             }
             else
             {
@@ -303,7 +336,7 @@ namespace Adventure
         {
             Console.WriteLine("Type the id of the item you want to buy");
             string userInput = Console.ReadLine();
-            Item itemSelect = shop.ShopInventory.First(item => item.Id == userInput);
+            Item itemSelect = shop.ShopInventory.FirstOrDefault(item => item.Id == userInput);
 
             if (itemSelect != null)
             {
@@ -364,18 +397,24 @@ namespace Adventure
             Console.WriteLine($"Do you wish to pick up {LootItem.Name}?");
             Console.WriteLine("1. Yes");
             Console.WriteLine("2. No");
-            switch (Console.ReadLine())
+            bool done = false;
+            while (done == false)
             {
-                case "1":
-                    Inventory.Add(LootItem);
-                    Console.WriteLine($"{LootItem.Name} added to your inventory!");
-                    break;
-                case "2":
-                    Console.WriteLine("You leave the item on the ground.");
-                    break;
-                default:
-                    Console.WriteLine("Not a command");
-                    break;
+                switch (Console.ReadLine())
+                {
+                    case "1":
+                        Inventory.Add(LootItem);
+                        Console.WriteLine($"{LootItem.Name} added to your inventory!");
+                        done = true;
+                        break;
+                    case "2":
+                        Console.WriteLine("You leave the item on the ground.");
+                        done = true;
+                        break;
+                    default:
+                        Console.WriteLine("Not a command");
+                        break;
+                }
             }
         }
     }

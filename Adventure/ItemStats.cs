@@ -10,6 +10,7 @@ namespace Adventure
     {
         public string StatToIncrease { get;}
         public int StatIncrease { get; }
+        public int VendorPrice { get; }
 
         public ItemStats(string id, string name, string statToIncrease, int statIncrease, int price)
         {
