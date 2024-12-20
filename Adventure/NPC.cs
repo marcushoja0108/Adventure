@@ -15,7 +15,6 @@ namespace Adventure
         public int Strength { get; set; }
         public int ExperienceGain { get; set; }
         public int Level { get; set; }
-
         public int Stamina { get; set; }
         public int MaxStamina { get; set; }
 

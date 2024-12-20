@@ -2,13 +2,16 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Security.Principal;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Adventure
 {
     internal class Player : IGameCharacter
     {
+        public int Id { get; }
         public string Name { get; set; }
         public string ClassName { get; }
         public int Health { get; set; }
@@ -30,9 +33,11 @@ namespace Adventure
         public int Gold { get; set; }
 
         public ConsoleColor Color { get; }
+        public Environment environment { get; }
 
-        public Player(string name, string className, int maxHealth, int strength, int cunning, int level, int maxLevel, int maxStamina)
+        public Player(int id, string name, string className, int maxHealth, int strength, int cunning, int level, int maxLevel, int maxStamina, ConsoleColor color)
         {
+            Id = id;
             Name = name;
             ClassName = className;
             MaxHealth = maxHealth;
@@ -47,8 +52,8 @@ namespace Adventure
             DefeatedList = new List<NPC>();
             Inventory = new List<Item>();
             Gold = 500;
-            Color = ConsoleColor.Green;
-
+            Color = color;
+            environment = new Environment();
         }
 
         public string HpBar()
@@ -224,6 +229,20 @@ namespace Adventure
             Console.ResetColor();
         }
 
+        public void ShowSimple()
+        {
+            Console.WriteLine();
+            Console.ForegroundColor = Color;
+            Console.WriteLine($"Name:           {Name}");
+            Console.WriteLine($"Class:          {ClassName}");
+            Console.WriteLine($"Level:          {Level}");
+            Console.WriteLine($"Gold:           {Gold}");
+            Console.WriteLine($"Max Health:     {MaxHealth}");
+            Console.WriteLine($"Strength:       {Strength}");
+            Console.WriteLine($"Max Stamina:    {MaxStamina}");
+            Console.ResetColor();
+        }
+
         public void ShowDefeatedEnemies()
         {
             Console.ForegroundColor = ConsoleColor.Red;
@@ -381,6 +400,9 @@ namespace Adventure
                         Show();
                         ShowDefeatedEnemies();
                         break;
+                    case "4":
+                        SaveGame();
+                        break;
                 }
             }
             Console.Clear();
@@ -391,6 +413,7 @@ namespace Adventure
             Console.WriteLine("1. Continue on your journey");
             Console.WriteLine("2. Show inventory");
             Console.WriteLine("3. Stats");
+            Console.WriteLine("4. Save character");
         }
         public void Loot(Item LootItem)
         {
@@ -417,5 +440,26 @@ namespace Adventure
                 }
             }
         }
+
+        public void SaveGame()
+        {
+            List<Player> characters = new List<Player>();
+            if (File.Exists("Characters.json"))
+            {
+                var json = File.ReadAllText("Characters.json");
+                characters = JsonSerializer.Deserialize<List<Player>>(json) ?? new List<Player>();
+            }
+            if (characters.Contains(this))
+            {
+                characters.Remove(this);
+            }
+            characters.Add(this);
+
+            var updatedJson = JsonSerializer.Serialize(characters);
+            File.WriteAllText("Characters.json", updatedJson);
+            Console.Write("Saving character");
+            environment.LoadingDots();
+        }
+
     }
 }

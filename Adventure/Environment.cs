@@ -9,12 +9,14 @@ namespace Adventure
 {
     internal class Environment
     {
+        private List<Player> DeadCharacters { get; }
         private List<Player> Characters { get; }
 
 
         public Environment()
         {
-            Characters = LoadDeadCharacters();
+            DeadCharacters = LoadCharacters("deadCharacters.json");
+            Characters = LoadCharacters("Characters.json");
         }
 
         public void MainMenu()
@@ -23,17 +25,21 @@ namespace Adventure
             {
                 Console.WriteLine("Welcome to Adventure!");
                 Console.WriteLine("1. Create new adventure");
-                Console.WriteLine("2. View past characters");
-                Console.WriteLine("3. Stats");
+                Console.WriteLine("2. View current characters");
+                Console.WriteLine("3. View dead characters");
+                Console.WriteLine("4. Stats");
                 switch (Console.ReadLine())
                 {
                     case "1":
                         CreateCharacterMenu();
                         break;
                     case "2":
-                        ViewPastCharacters();
+                        ViewCurrentCharacters();
                         break;
                     case "3":
+                        ViewPastCharacters();
+                        break;
+                    case "4":
                         Console.WriteLine("Not ready");
                         break;
                     default:
@@ -81,32 +87,37 @@ namespace Adventure
         {
             Console.Write("Name: ");
             string newName = Console.ReadLine();
+            NameCheck(newName);
             GameLoop newGame = new GameLoop();
             switch (playerClass)
             {
                 case 1:
-                    Player newWarrior = new Player(newName, "Warrior",20, 10, 1,1, 10, 3);
+                    Player newWarrior = new Player(Characters.Count, newName, "Warrior",20, 10, 1,1, 10, 3, ConsoleColor.Blue);
                     newGame.Loop(newWarrior);
                     break;
                 case 2:
-                    Player newMage = new Player(newName, "Mage", 10, 3,3, 1, 10, 5);
+                    Player newMage = new Player(Characters.Count, newName, "Mage", 10, 3,3, 1, 10, 5, ConsoleColor.Magenta);
                     newGame.Loop(newMage);
                     break;
                 case 3:
-                    Player newHunter = new Player(newName, "Hunter", 15, 5,5, 1, 10, 7);
+                    Player newHunter = new Player(Characters.Count, newName, "Hunter", 15, 5,5, 1, 10, 7, ConsoleColor.Green);
                     newGame.Loop(newHunter);
                     break;
             }
         }
 
-        private List<Player> LoadDeadCharacters()
+        private void NameCheck(string name)
+        {
+
+        }
+
+        private List<Player> LoadCharacters(string jsonCharacters)
         {
             List<Player> characters;
-            if (File.Exists("deadCharacters.json"))
+            if (File.Exists(jsonCharacters))
             {
-                var json = File.ReadAllText("deadCharacters.json");
+                var json = File.ReadAllText(jsonCharacters);
                 characters = JsonSerializer.Deserialize<List<Player>>(json);
-                characters.Reverse();
             }
             else
             {
@@ -115,32 +126,84 @@ namespace Adventure
             return characters;
         }
 
+        private void ViewCurrentCharacters()
+        {
+            foreach(var character in Characters)
+            {
+                character.ShowSimple();
+            }
+            ViewCurrentCharactersMenu();
+        }
+
+        private void ViewCurrentCharactersMenu()
+        {
+            Console.WriteLine("1. Continue an adventure");
+            Console.WriteLine("2. Back");
+            switch (Console.ReadLine())
+            {
+                case "1":
+                    ChooseCurrentCharacter();
+                    break;
+                case "2":
+                    return;
+            }
+        }
+
+        private void ChooseCurrentCharacter()
+        {
+            Console.Write("Character Name:");
+            string userInput = Console.ReadLine();
+            Player select = null;
+            foreach (var character in Characters)
+            {
+                if(character.Name == userInput)
+                {
+                    select = character;
+                }
+            }
+            if (select != null) 
+            {
+                GameLoop gameLoop = new GameLoop();
+                LoadingDots();
+                gameLoop.Loop(select);
+            }
+            else
+            {
+                Console.WriteLine("No character with that name");
+            }
+        }
+
         public void ViewPastCharacters()
         {
+            List<Player> characters = Characters;
+            characters.Reverse();
             Console.WriteLine("Most recent characters first");
-            if (Characters.Count <= 0)
+            if (DeadCharacters.Count <= 0)
             {
                 Console.WriteLine("No past characters yet");
             }
             else
             {
-                foreach (var character in Characters)
+                foreach (var character in characters)
                 {
-                    Console.WriteLine();
-                    Console.ForegroundColor = character.Color;
-                    Console.WriteLine($"Name:       {character.Name}");
-                    Console.WriteLine($"Class:      {character.ClassName}");
-                    Console.WriteLine($"Level:      {character.Level}");
-                    Console.WriteLine($"Gold:       {character.Gold}");
-                    Console.WriteLine($"Max Health  {character.MaxHealth}");
-                    Console.WriteLine($"Strength    {character.Strength}");
-                    Console.WriteLine($"Max Stamina {character.MaxStamina}");
+                    character.ShowSimple();
                     character.ShowDefeatedEnemies();
                 }
             }
             Console.WriteLine("Press enter to continue");
             Console.ReadLine();
             Console.Clear();
+        }
+
+        public void LoadingDots()
+        {
+            string dots = new string('.', 4);
+            foreach (var dot in dots)
+            {
+                Console.Write($"{dot}");
+                Thread.Sleep(700);
+            }
+            Console.WriteLine();
         }
     }
 }
