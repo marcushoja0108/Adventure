@@ -85,9 +85,7 @@ namespace Adventure
 
         private void CreateNewCharacter(int playerClass)
         {
-            Console.Write("Name: ");
-            string newName = Console.ReadLine();
-            NameCheck(newName);
+            string newName = GetNewName();
             GameLoop newGame = new GameLoop();
             switch (playerClass)
             {
@@ -106,9 +104,36 @@ namespace Adventure
             }
         }
 
-        private void NameCheck(string name)
+        private string GetNewName()
+        {
+            while (true)
+            {
+            Console.Write("Name: ");
+            string newName = Console.ReadLine();
+                switch (NameCheck(newName))
+                {
+                    case true:
+                        Console.WriteLine("That name is already in use");
+                        break;
+                    case false:
+                        return newName;
+                }
+            }
+        }
+
+        private bool NameCheck(string name)
         {
 
+            List<Player> allCharacters = DeadCharacters.Concat(Characters).ToList();
+            bool exists = false;
+            foreach(var character in allCharacters)
+            {
+                if(character.Name == name)
+                {
+                    exists = true;
+                }
+            }
+            return exists;
         }
 
         private List<Player> LoadCharacters(string jsonCharacters)
@@ -117,7 +142,7 @@ namespace Adventure
             if (File.Exists(jsonCharacters))
             {
                 var json = File.ReadAllText(jsonCharacters);
-                characters = JsonSerializer.Deserialize<List<Player>>(json);
+                characters = JsonSerializer.Deserialize<List<Player>>(json) ?? new List<Player>();
             }
             else
             {
@@ -142,7 +167,14 @@ namespace Adventure
             switch (Console.ReadLine())
             {
                 case "1":
+                    if(Characters.Count > 0)
+                    {
                     ChooseCurrentCharacter();
+                    }
+                    else
+                    {
+                        Console.WriteLine("No available characters");
+                    }
                     break;
                 case "2":
                     return;
@@ -151,6 +183,7 @@ namespace Adventure
 
         private void ChooseCurrentCharacter()
         {
+            Console.WriteLine("Type the name of your selected character");
             Console.Write("Character Name:");
             string userInput = Console.ReadLine();
             Player select = null;

@@ -1,8 +1,7 @@
 ﻿
 **	Bossfight når man når max level
 *	Stats fra menu skjermen. Ulike karakterer med deres stats skjerm
-*	SaveGame ved bruk av json. lagrer state og karakterer. Mangler lagring av defeated enemies.
-*	SaveGame av ikke døde karakterer. Legg til check if karakteren er i listen så remove og add på ny.
+*	SaveGame ved bruk av json. lagrer state og karakterer. Mangler lagring av defeated enemies. Lagrer heller ikke items.
 *   kan sortere tidligere karakterer etter høyest stats, tid spilt, mest gold, flest defeats etc.
 	I tillegg kanskje søke etter navn eller klasser
 

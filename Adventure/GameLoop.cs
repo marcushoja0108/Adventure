@@ -209,7 +209,7 @@ namespace Adventure
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("-------Game over-------");
                 Console.WriteLine("Press enter to go back to the main menu");
-                SaveGame(character);
+                SaveEndGame(character);
                 Console.ResetColor();
                 Console.ReadLine();
                 Console.Clear();
@@ -296,7 +296,7 @@ namespace Adventure
             }
         }
 
-        public void SaveGame(Player character)
+        public void SaveEndGame(Player character)
         {
             List<Player> characters = new List<Player>();
             if (File.Exists("deadCharacters.json"))

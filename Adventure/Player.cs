@@ -33,7 +33,6 @@ namespace Adventure
         public int Gold { get; set; }
 
         public ConsoleColor Color { get; }
-        public Environment environment { get; }
 
         public Player(int id, string name, string className, int maxHealth, int strength, int cunning, int level, int maxLevel, int maxStamina, ConsoleColor color)
         {
@@ -53,7 +52,6 @@ namespace Adventure
             Inventory = new List<Item>();
             Gold = 500;
             Color = color;
-            environment = new Environment();
         }
 
         public string HpBar()
@@ -413,7 +411,7 @@ namespace Adventure
             Console.WriteLine("1. Continue on your journey");
             Console.WriteLine("2. Show inventory");
             Console.WriteLine("3. Stats");
-            Console.WriteLine("4. Save character");
+            Console.WriteLine("4. Save and exit");
         }
         public void Loot(Item LootItem)
         {
@@ -443,6 +441,7 @@ namespace Adventure
 
         public void SaveGame()
         {
+            Environment menu = new Environment();
             List<Player> characters = new List<Player>();
             if (File.Exists("Characters.json"))
             {
@@ -457,9 +456,11 @@ namespace Adventure
 
             var updatedJson = JsonSerializer.Serialize(characters);
             File.WriteAllText("Characters.json", updatedJson);
+            
             Console.Write("Saving character");
-            environment.LoadingDots();
+            menu.LoadingDots();
+            Console.Clear();
+            menu.MainMenu();
         }
-
     }
 }
